@@ -1,4 +1,5 @@
 ﻿using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Running;
 using System;
 using System.Runtime.CompilerServices;
 
@@ -10,6 +11,7 @@ namespace OneToManyMapBenchmark
     {
         static void Main(string[] args)
         {
+            BenchmarkRunner.Run<BenchmarkerOneToManyMap>();
             Console.WriteLine("Hello World!");
         }
     }
