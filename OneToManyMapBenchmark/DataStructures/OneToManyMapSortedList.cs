@@ -6,32 +6,52 @@ namespace OneToManyMapBenchmark
 {
     internal sealed class OneToManyMapSortedList<TKey, TValue> : IOneToManyMap<TKey, TValue>
     {
-        private static SortedList<TKey, int> messageToIdKvp = new SortedList<TKey, int>();
-        private static SortedList<int, TKey> idToMessageKvp = new SortedList<int, TKey>();
-        private static SortedList<TValue, int> stateToMessageIdKvp = new SortedList<TValue, int>();
+        private SortedList<TKey, int> keyToKeyIdKvp = new SortedList<TKey, int>();
+        private SortedList<int, TKey> keyIdToKeyKvp = new SortedList<int, TKey>();
+        private SortedList<TValue, int> valueToKeyIdKvp = new SortedList<TValue, int>();
 
-        public TKey this[TValue value] => GetStateMessage(value);
+        public TKey this[TValue value] => GetKey(value);
 
         public void AddOneToManyMapping(TKey key, TValue[] values)
         {
-            int messageId;
-            if (!messageToIdKvp.TryGetValue(key, out messageId))
+            EnsureValuesHaveNoPriorMapping(values);
+
+            int keyId;
+            if (!keyToKeyIdKvp.TryGetValue(key, out keyId))
             {
-                messageId = messageToIdKvp.Count + 1;
-                messageToIdKvp[key] = messageId;
-                idToMessageKvp[messageId] = key;
+                keyId = keyToKeyIdKvp.Count + 1;
+                keyToKeyIdKvp[key] = keyId;
+                keyIdToKeyKvp[keyId] = key;
             }
 
-            foreach (var state in values)
+            foreach (var value in values)
             {
-                stateToMessageIdKvp[state] = messageId;
+                valueToKeyIdKvp[value] = keyId;
             }
         }
 
-        private static TKey GetStateMessage(TValue value)
+        private void EnsureValuesHaveNoPriorMapping(TValue[] values)
         {
-            var messageId = stateToMessageIdKvp[value];
-            return idToMessageKvp[messageId];
+            foreach (var value in values)
+            {
+                if (valueToKeyIdKvp.ContainsKey(value))
+                {
+                    var keyId = valueToKeyIdKvp[value];
+                     var mappedKey = keyIdToKeyKvp[keyId];
+                    throw new ValuesHasPriorMappingToKeyException($"The value: {value}, has a prior mapping to the key: {mappedKey}.");
+                }
+            }
+        }
+
+        private TKey GetKey(TValue value)
+        {
+            if (valueToKeyIdKvp.ContainsKey(value))
+            {
+                var keyId = valueToKeyIdKvp[value];
+                return keyIdToKeyKvp[keyId];
+            }
+
+            throw new ValueNotMappedToKeyException($"The value: {value} of type: {typeof(TValue)}, has not been mapped to a Key of type: {typeof(TKey)}");
         }
     }
 }

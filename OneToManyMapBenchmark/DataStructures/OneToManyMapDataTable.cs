@@ -5,15 +5,15 @@ using System.Text;
 
 namespace OneToManyMapBenchmark
 {
-    internal sealed class OneToManyMapDataTable : IOneToManyMap<string, string>
+    internal sealed class OneToManyMapDataTable<TKey, TValue> : IOneToManyMap<TKey, TValue>
     {
-        private static DataTable messageDataTable;
-        private static DataTable stateMessageDataTable;
-        private static DataRelation stateMessageRelation;
+        private static DataTable keyDataTable;
+        private static DataTable valueDataTable;
+        private static DataRelation keyValueRelation;
 
-        public string this[string value]
+        public TKey this[TValue value]
         {
-            get { return GetStateMessage(value); }
+            get { return GetKey(value); }
         }
 
         public OneToManyMapDataTable()
@@ -23,59 +23,81 @@ namespace OneToManyMapBenchmark
 
         private static void InitializeSchema()
         {
-            messageDataTable = new DataTable("Message");
-            messageDataTable.Columns.Add(new DataColumn("Id", typeof(int)));
-            messageDataTable.Columns.Add(new DataColumn("Description", typeof(string)));
-            messageDataTable.PrimaryKey = new[] { messageDataTable.Columns[0] };
-            messageDataTable.Constraints.Add("IdxDescription", messageDataTable.Columns[1], false);
+            keyDataTable = new DataTable("Key");
+            keyDataTable.Columns.Add(new DataColumn("Id", typeof(int)));
+            keyDataTable.Columns.Add(new DataColumn("Description", typeof(TKey)));
+            keyDataTable.PrimaryKey = new[] { keyDataTable.Columns[0] };
+            keyDataTable.Constraints.Add("IdxKey", keyDataTable.Columns[1], false);
 
 
-            stateMessageDataTable = new DataTable("StateMessage");
-            stateMessageDataTable.Columns.Add(new DataColumn("State", typeof(string)));
-            stateMessageDataTable.Columns.Add(new DataColumn("MessageId", typeof(int)));
-            stateMessageDataTable.PrimaryKey = new[] { stateMessageDataTable.Columns[0] };
+            valueDataTable = new DataTable("Value");
+            valueDataTable.Columns.Add(new DataColumn("Value", typeof(TValue)));
+            valueDataTable.Columns.Add(new DataColumn("KeyId", typeof(int)));
+            valueDataTable.PrimaryKey = new[] { valueDataTable.Columns[0] };
 
-            var messageIdFK = new ForeignKeyConstraint("MessageIdFK", messageDataTable.Columns["Id"], stateMessageDataTable.Columns["MessageId"]);
-            stateMessageDataTable.Constraints.Add(messageIdFK);
+            var keyIdFK = new ForeignKeyConstraint("KeyIdFK", keyDataTable.Columns["Id"], valueDataTable.Columns["KeyId"]);
+            valueDataTable.Constraints.Add(keyIdFK);
 
             var dataSet = new DataSet();
-            dataSet.Tables.Add(messageDataTable);
-            dataSet.Tables.Add(stateMessageDataTable);
-            stateMessageRelation = new DataRelation("StateMessage_Message_Rel", messageDataTable.Columns[0], stateMessageDataTable.Columns[1]);
-            dataSet.Relations.Add(stateMessageRelation);
+            dataSet.Tables.Add(keyDataTable);
+            dataSet.Tables.Add(valueDataTable);
+            keyValueRelation = new DataRelation("keyValueDataRelation", keyDataTable.Columns[0], valueDataTable.Columns[1]);
+            dataSet.Relations.Add(keyValueRelation);
         }
 
-        private static string GetStateMessage(string value)
+        private static TKey GetKey(TValue value)
         {
-            var stateMessageRow = stateMessageDataTable.Rows.Find(value);
-            var messageRow = stateMessageRow.GetParentRow(stateMessageRelation);
-            return (string)messageRow[1];
-        }
+            var keyValueRow = valueDataTable.Rows.Find(value);
 
-        public void AddOneToManyMapping(string key, string[] values)
-        {
-            var messageRows = messageDataTable.Select($"Description = '{key}'");
-            var messageId = 0;
-
-            if (messageRows.Length == 0)
+            if (keyValueRow != null)
             {
-                messageId = messageDataTable.Rows.Count + 1;
-                var row = messageDataTable.NewRow();
-                row[0] = messageId;
+                var keyRow = keyValueRow.GetParentRow(keyValueRelation);
+                return (TKey)keyRow[1];
+            }
+
+            throw new ValueNotMappedToKeyException($"The value: {value} of type: {typeof(TValue)}, has not been mapped to a Key of type: {typeof(TKey)}");
+        }
+
+        public void AddOneToManyMapping(TKey key, TValue[] values)
+        {
+            EnsureValuesHaveNoPriorMapping(values);
+
+            var keyRowsFound = keyDataTable.Select($"Description = '{key}'");
+            var keyId = 0;
+
+            if (keyRowsFound.Length == 0)
+            {
+                keyId = keyDataTable.Rows.Count + 1;
+                var row = keyDataTable.NewRow();
+                row[0] = keyId;
                 row[1] = key;
-                messageDataTable.Rows.Add(row);
+                keyDataTable.Rows.Add(row);
             }
             else
             {
-                messageId = (int)messageRows[0][0];
+                keyId = (int)keyRowsFound[0][0];
             }
 
-            foreach (var state in values)
+            foreach (var value in values)
             {
-                var row = stateMessageDataTable.NewRow();
-                row[0] = state;
-                row[1] = messageId;
-                stateMessageDataTable.Rows.Add(row);
+                var row = valueDataTable.NewRow();
+                row[0] = value;
+                row[1] = keyId;
+                valueDataTable.Rows.Add(row);
+            }
+        }
+
+        private void EnsureValuesHaveNoPriorMapping(TValue[] values)
+        {
+            foreach (var value in values)
+            {
+                var keyValueRow = valueDataTable.Rows.Find(value);
+                if (keyValueRow != null)
+                {
+                    var keyRow = keyValueRow.GetParentRow(keyValueRelation);
+                    var mappedKey = (TKey)keyRow[1];
+                    throw new ValuesHasPriorMappingToKeyException($"The value: {value}, has a prior mapping to the key: {mappedKey}.");
+                }
             }
         }
     }

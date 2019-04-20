@@ -8,7 +8,7 @@ namespace OneToManyMapBenchmark
     [MemoryDiagnoser]
     public class BenchmarkerOneToManyMap
     {
-        private static OneToManyMapDataTable oneToManyMapDataTable = new OneToManyMapDataTable();
+        private static OneToManyMapDataTable<string, string> oneToManyMapDataTable = new OneToManyMapDataTable<string, string>();
         private static OneToManyMapDictionary<string, string> messageToStateMap = new OneToManyMapDictionary<string, string>();
         private static OneToManyMapSortedList<string, string> oneToManyMapSortedList = new OneToManyMapSortedList<string, string>();
 
