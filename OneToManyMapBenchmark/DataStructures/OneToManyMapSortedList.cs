@@ -6,9 +6,9 @@ namespace OneToManyMapBenchmark
 {
     internal sealed class OneToManyMapSortedList<TKey, TValue> : IOneToManyMap<TKey, TValue>
     {
-        private SortedList<TKey, int> keyToKeyIdKvp = new SortedList<TKey, int>();
-        private SortedList<int, TKey> keyIdToKeyKvp = new SortedList<int, TKey>();
-        private SortedList<TValue, int> valueToKeyIdKvp = new SortedList<TValue, int>();
+        private readonly SortedList<TKey, int> keyToKeyIdKvp = new SortedList<TKey, int>();
+        private readonly SortedList<int, TKey> keyIdToKeyKvp = new SortedList<int, TKey>();
+        private readonly SortedList<TValue, int> valueToKeyIdKvp = new SortedList<TValue, int>();
 
         public TKey this[TValue value] => GetKey(value);
 

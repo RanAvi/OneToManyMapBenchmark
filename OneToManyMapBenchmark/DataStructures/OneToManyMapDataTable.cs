@@ -7,9 +7,9 @@ namespace OneToManyMapBenchmark
 {
     internal sealed class OneToManyMapDataTable<TKey, TValue> : IOneToManyMap<TKey, TValue>
     {
-        private static DataTable keyDataTable;
-        private static DataTable valueDataTable;
-        private static DataRelation keyValueRelation;
+        private DataTable keyDataTable;
+        private DataTable valueDataTable;
+        private DataRelation keyValueRelation;
 
         public TKey this[TValue value]
         {
@@ -21,7 +21,7 @@ namespace OneToManyMapBenchmark
             InitializeSchema();
         }
 
-        private static void InitializeSchema()
+        private void InitializeSchema()
         {
             keyDataTable = new DataTable("Key");
             keyDataTable.Columns.Add(new DataColumn("Id", typeof(int)));
@@ -45,7 +45,7 @@ namespace OneToManyMapBenchmark
             dataSet.Relations.Add(keyValueRelation);
         }
 
-        private static TKey GetKey(TValue value)
+        private TKey GetKey(TValue value)
         {
             var keyValueRow = valueDataTable.Rows.Find(value);
 
