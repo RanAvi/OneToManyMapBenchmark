@@ -11,14 +11,16 @@ namespace OneToManyMapBenchmark
         private static OneToManyMapDataTable<string, string> oneToManyMapDataTable = new OneToManyMapDataTable<string, string>();
         private static OneToManyMapDictionary<string, string> messageToStateMap = new OneToManyMapDictionary<string, string>();
         private static OneToManyMapSortedList<string, string> oneToManyMapSortedList = new OneToManyMapSortedList<string, string>();
+        private static OneToManyMapList<string, string> oneToManyMapList = new OneToManyMapList<string, string>();
 
         private static string[] states = new string[] { "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN", "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV", "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY" };
-
+        private readonly string[] randomizedStates = Randomizer.ShuffleArray(states);
         [GlobalSetup]
         public void GlobalSetup()
         {
             Initialize(oneToManyMapDataTable);
             Initialize(messageToStateMap);
+            Initialize(oneToManyMapList);
             Initialize(oneToManyMapSortedList);
         }
 
@@ -44,27 +46,36 @@ namespace OneToManyMapBenchmark
         [Benchmark]
         public void TestOneToManyMapDataTable()
         {
-            foreach (var state in states)
+            foreach (var state in randomizedStates)
             {
-                var message = oneToManyMapDataTable[state];
+                var _ = oneToManyMapDataTable[state];
             }
         }
 
         [Benchmark(Baseline = true)]
         public void TestOneToManyMapSortedList()
         {
-            foreach (var state in states)
+            foreach (var state in randomizedStates)
             {
-                var message = oneToManyMapSortedList[state];
+                var _ = oneToManyMapSortedList[state];
+            }
+        }
+
+        [Benchmark]
+        public void TestOneToManyMapList()
+        {
+            foreach (var state in randomizedStates)
+            {
+                var _ = oneToManyMapList[state];
             }
         }
 
         [Benchmark]
         public void TestOneToManyMapDictionary()
         {
-            foreach (var state in states)
+            foreach (var state in randomizedStates)
             {
-                var message = messageToStateMap[state];
+                var _ = messageToStateMap[state];
             }
         }
     }
