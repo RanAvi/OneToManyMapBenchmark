@@ -1,6 +1,4 @@
-﻿using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-using System;
+﻿using BenchmarkDotNet.Running;
 using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("UnitTestProject1")]
@@ -11,6 +9,9 @@ namespace OneToManyMapBenchmark
     {
         static void Main(string[] args)
         {
+            ////var benchmarkerOneToManyMap = new BenchmarkerOneToManyMap();
+            ////benchmarkerOneToManyMap.GlobalSetup();
+
             BenchmarkRunner.Run<BenchmarkerOneToManyMap>();
         }
     }

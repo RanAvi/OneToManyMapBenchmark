@@ -19,28 +19,25 @@ namespace OneToManyMapBenchmark
             return BitConverter.ToInt32(buffer, 0);
         }
 
-        public static int[] GetRandomUniqueInts(int numberOfInts)
+        public static int[] GetRandomUniqueInts(int numberOfElements)
         {
-            using (var rng = new RNGCryptoServiceProvider())
+            var hashset = new HashSet<int>();
+            var randomInts = new int[numberOfElements];
+
+            var generated = 0;
+            do
             {
-                var hashset = new HashSet<int>();
-                var randomInts = new int[numberOfInts];
-
-                var generated = 0;
-                do
+                var number = GetRandomNumber();
+                if (!hashset.Contains(number))
                 {
-                    var number = GetRandomNumber();
-                    if (!hashset.Contains(number))
-                    {
-                        randomInts[generated] = number;
-                        hashset.Add(number);
-                        generated++;
-                    }
+                    randomInts[generated] = number;
+                    hashset.Add(number);
+                    generated++;
                 }
-                while (generated < numberOfInts);
-
-                return randomInts;
             }
+            while (generated < numberOfElements);
+
+            return randomInts;
         }
 
         public static T[] ShuffleArray<T>(T[] source)
@@ -89,6 +86,27 @@ namespace OneToManyMapBenchmark
                 sb.Append(ch);
             }
             return sb.ToString();
+        }
+
+        public static string[] GetRandomUniqueAciiStrings(int length, int numberOfElements)
+        {
+            var hashset = new HashSet<string>();
+            var randomStrings = new string[numberOfElements];
+
+            var generated = 0;
+            do
+            {
+                var data = GetRandomAciiString(length);
+                if (!hashset.Contains(data))
+                {
+                    randomStrings[generated] = data;
+                    hashset.Add(data);
+                    generated++;
+                }
+            }
+            while (generated < numberOfElements);
+
+            return randomStrings;
         }
 
         public static string GetRandomUnicodeString(int length)

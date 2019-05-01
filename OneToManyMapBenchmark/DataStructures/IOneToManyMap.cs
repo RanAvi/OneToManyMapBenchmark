@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace OneToManyMapBenchmark
+﻿namespace OneToManyMapBenchmark
 {
     internal interface IOneToManyMap<TKey, in TValue>
     {
