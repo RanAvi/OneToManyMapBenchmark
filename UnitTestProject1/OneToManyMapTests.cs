@@ -63,6 +63,23 @@ namespace UnitTestProject1
             }
         }
 
+        [TestMethod]
+        [TestCategory("Class Test")]
+        public void OneToManyMap_AddOneToManyMapping_WhenAddingANewValueToExistingKey_ShouldMapValueToKey()
+        {
+            // Arrange
+            var expectedKey = "This is Message A";
+            var valueAlreadyMapped = "VA";
+            var newValue = "MD";
+
+            var oneToManyMap = InitializeOneToManyMap(expectedKey, new[] { valueAlreadyMapped });
+
+            // Act
+            oneToManyMap.AddOneToManyMapping(expectedKey, new[] { newValue });
+            
+            // Assert                
+            Assert.AreEqual(expectedKey, oneToManyMap[newValue]);
+        }
 
         [TestMethod]
         [TestCategory("Class Test")]
