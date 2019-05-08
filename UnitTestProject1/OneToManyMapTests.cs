@@ -8,10 +8,17 @@ namespace UnitTestProject1
     {
         private static IOneToManyMap<TKey, TValue> InitializeOneToManyMap<TKey, TValue>(TKey key, TValue[] values)
         {
-            var oneToManyMap = new OneToManyMapList<TKey, TValue>();
+            var oneToManyMap = new OneToManyMapDictionary<TKey, TValue>();
             oneToManyMap.AddOneToManyMapping(key, values);
             return oneToManyMap;
         }
+
+        ////private static IOneToManyMap<string, string> InitializeOneToManyMap(string key, string[] values)
+        ////{
+        ////    var oneToManyMap = new OneToManyMapDictionary<string, string>();
+        ////    oneToManyMap.AddOneToManyMapping(key, values);
+        ////    return oneToManyMap;
+        ////}
 
         [TestMethod]
         [TestCategory("Class Test")]
@@ -58,8 +65,9 @@ namespace UnitTestProject1
             catch (ValueNotMappedToKeyException e)
             {
                 // Assert
-                Assert.IsTrue(e.Message.Contains($"value: {valueWithNoKeyMapping}"));
-                Assert.IsTrue(e.Message.Contains("has not been mapped to a Key"));
+                var expectedSubstringInExceptionMessage = "has not been mapped to a Key";
+                Assert.IsTrue(e.Message.Contains($"value: {valueWithNoKeyMapping}"), $"An Exception of type ValueNotMappedToKeyException was thrown, however, the message was expected to contain the \"value\" {valueWithNoKeyMapping}, that has not been mapped to a key");
+                Assert.IsTrue(e.Message.Contains(expectedSubstringInExceptionMessage), "An Exception of type ValueNotMappedToKeyException was thrown, however, the message was expected to contain the substring: {expectedSubstringInExceptionMessage}");
             }
         }
 
@@ -78,7 +86,7 @@ namespace UnitTestProject1
             oneToManyMap.AddOneToManyMapping(expectedKey, new[] { newValue });
             
             // Assert                
-            Assert.AreEqual(expectedKey, oneToManyMap[newValue]);
+            Assert.AreEqual(expectedKey, oneToManyMap[newValue], $"The newly added value: {newValue} was expected to be mapped to the key: {expectedKey}");
         }
 
         [TestMethod]
@@ -102,9 +110,9 @@ namespace UnitTestProject1
             catch (ValuesHasPriorMappingToKeyException e)
             {
                 // Assert                
-                Assert.IsTrue(e.Message.Contains($"value: {valueAlreadyMapped}"));
+                Assert.IsTrue(e.Message.Contains($"value: {valueAlreadyMapped}"), "The Exception Message does not indicate what \"Value\" is already mapped");
                 Assert.IsTrue(e.Message.Contains("has a prior mapping"));
-                Assert.IsTrue(e.Message.Contains(preExistingKey));
+                Assert.IsTrue(e.Message.Contains(preExistingKey), $"The Exception Message does not indicate the \"Key\" the Value: {valueAlreadyMapped} is already mapped to.");
             }
         }
 
@@ -125,14 +133,14 @@ namespace UnitTestProject1
             try
             {
                 oneToManyMap.AddOneToManyMapping("This is a new Key", new[] { irrelevantValueToBeAdded1, irrelevantValueToBeAdded2, valueAlreadyMapped });
-                Assert.Fail("We were expecting an Exception of type ValueNotMappedToKeyException to be thrown, but no Exception was thrown");
+                Assert.Fail("We were expecting an Exception of type ValuesHasPriorMappingToKeyException to be thrown, but no Exception was thrown");
             }
             catch (ValuesHasPriorMappingToKeyException)
             {
                 // Assert
                 // Those values that were in the map should remain unchanged
-                Assert.AreEqual(preExistingKey, oneToManyMap[irrelevantvalue1]);
-                Assert.AreEqual(preExistingKey, oneToManyMap[irrelevantvalue2]);
+                Assert.AreEqual(preExistingKey, oneToManyMap[irrelevantvalue1], $"The value: {irrelevantvalue1} was expected to be mapped to the pre-existing key: {preExistingKey}");
+                Assert.AreEqual(preExistingKey, oneToManyMap[irrelevantvalue2], $"The value: {irrelevantvalue2} was expected to be mapped to the pre-existing key: {preExistingKey}");
 
                 // Those values that were attempted to be added where not
                 AssertValueIsNotMapped(oneToManyMap, irrelevantValueToBeAdded1);
@@ -145,8 +153,8 @@ namespace UnitTestProject1
             // Act
             try
             {
-                var _ = oneToManyMap[valueNotMapped];
-                Assert.Fail("We were expecting an Exception of type ValueNotMappedToKeyException to be thrown, but no Exception was thrown");
+                var key = oneToManyMap[valueNotMapped];
+                Assert.Fail($"It appears that the value: {valueNotMapped} is mapped to the key: {key}. However, we were expecting an Exception of type ValueNotMappedToKeyException to be thrown, but no Exception was thrown.");
             }
             catch (ValueNotMappedToKeyException)
             {
@@ -171,7 +179,7 @@ namespace UnitTestProject1
             oneToManyMapDictionary.AddOneToManyMapping(preExistingKey, new[] { newValueMappedToExistingKey });
 
             // Assert
-            Assert.AreEqual(preExistingKey, oneToManyMapDictionary[newValueMappedToExistingKey]);
+            Assert.AreEqual(preExistingKey, oneToManyMapDictionary[newValueMappedToExistingKey], $"The new value: {newValueMappedToExistingKey} was expected to be mapped to the pre-existing key: {preExistingKey}");
         }
     }
 }

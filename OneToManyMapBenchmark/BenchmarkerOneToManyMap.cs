@@ -8,7 +8,7 @@ namespace OneToManyMapBenchmark
     public class BenchmarkerOneToManyMap
     {
         private static OneToManyMapDataTable<string, string> oneToManyMapDataTable = new OneToManyMapDataTable<string, string>();
-        private static OneToManyMapDictionary<string, string> messageToStateMap = new OneToManyMapDictionary<string, string>();
+        private static OneToManyMapDictionary<string, string> oneToManyMapDictionary = new OneToManyMapDictionary<string, string>();
         private static OneToManyMapSortedList<string, string> oneToManyMapSortedList = new OneToManyMapSortedList<string, string>();
         private static OneToManyMapList<string, string> oneToManyMapList = new OneToManyMapList<string, string>();
 
@@ -45,27 +45,11 @@ namespace OneToManyMapBenchmark
             foreach (var key in tempDictionary.Keys)
             {
                 var values = tempDictionary[key];
-                oneToManyMapDataTable.AddOneToManyMapping(key, values);
-                messageToStateMap.AddOneToManyMapping(key, values);
+                oneToManyMapDataTable.AddOneToManyMapping(key, values);                
                 oneToManyMapList.AddOneToManyMapping(key, values);
                 oneToManyMapSortedList.AddOneToManyMapping(key, values);
+                oneToManyMapDictionary.AddOneToManyMapping(key, values);
             }
-
-            ////oneToManyMap.AddOneToManyMapping("This is Message A", new[] { "VA", "MD", "SC" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message B", new[] { "CO", "WI", "NY" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message C", new[] { "LA", "MN", "FL" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message D", new[] { "IN", "IL" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message E", new[] { "AL", "AK" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message F", new[] { "AZ", "CA" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message G", new[] { "AR", "CT" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message H", new[] { "DE", "HI" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message I", new[] { "GA", "DC" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message J", new[] { "ID" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message K", new[] { "IA", "KS", "KY", "ME" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message L", new[] { "MA", "OK", "PA", "SD", "VT", "WY" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message M", new[] { "NE", "OH", "MI", "UT", "WA" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message N", new[] { "NV", "NH", "NJ", "NM", "NC", "ND", "OR", "RI", "TN", "TX", "WV" });
-            ////oneToManyMap.AddOneToManyMapping("This is Message O", new[] { "MS", "MO", "MT" });
         }
 
         [Benchmark]
@@ -77,7 +61,7 @@ namespace OneToManyMapBenchmark
             }
         }
 
-        [Benchmark(Baseline = true)]
+        [Benchmark]
         public void TestOneToManyMapSortedList()
         {
             foreach (var value in randomizedValues)
@@ -95,12 +79,12 @@ namespace OneToManyMapBenchmark
             }
         }
 
-        [Benchmark]
+        [Benchmark(Baseline = true)]
         public void TestOneToManyMapDictionary()
         {
             foreach (var value in randomizedValues)
             {
-                var _ = messageToStateMap[value];
+                var _ = oneToManyMapDictionary[value];
             }
         }
     }
