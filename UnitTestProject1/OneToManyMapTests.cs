@@ -59,7 +59,7 @@ namespace UnitTestProject1
             // Act
             try
             {
-                var _ = oneToManyMap[valueWithNoKeyMapping];
+                _ = oneToManyMap[valueWithNoKeyMapping];
                 Assert.Fail("We were expecting an Exception of type ValueNotMappedToKeyException to be thrown, but no Exception was thrown");
             }
             catch (ValueNotMappedToKeyException e)

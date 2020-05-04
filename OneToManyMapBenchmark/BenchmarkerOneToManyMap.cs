@@ -53,39 +53,55 @@ namespace OneToManyMapBenchmark
         }
 
         [Benchmark]
-        public void TestOneToManyMapDataTable()
+        public string TestOneToManyMapDataTable()
         {
+            string key = null;
+
             foreach (var value in randomizedValues)
             {
-                var _ = oneToManyMapDataTable[value];
+                key = oneToManyMapDataTable[value];
             }
+
+            return key;
         }
 
         [Benchmark]
-        public void TestOneToManyMapSortedList()
+        public string TestOneToManyMapSortedList()
         {
+            string key = null;
+
             foreach (var value in randomizedValues)
             {
-                var _ = oneToManyMapSortedList[value];
+                key = oneToManyMapSortedList[value];
             }
+
+            return key;
         }
 
         [Benchmark]
-        public void TestOneToManyMapList()
+        public string TestOneToManyMapList()
         {
+            string key = null;
+
             foreach (var value in randomizedValues)
             {
-                var _ = oneToManyMapList[value];
+                key = oneToManyMapList[value];
             }
+
+            return key;
         }
 
         [Benchmark(Baseline = true)]
-        public void TestOneToManyMapDictionary()
+        public string TestOneToManyMapDictionary()
         {
+            string key = null;
+
             foreach (var value in randomizedValues)
             {
-                var _ = oneToManyMapDictionary[value];
+                key = oneToManyMapDictionary[value];
             }
+
+            return key;
         }
     }
 }

@@ -5,7 +5,12 @@ VisualStudioVersion = 16.0.28803.202
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneToManyMapBenchmark", "OneToManyMapBenchmark\OneToManyMapBenchmark.csproj", "{FFEA59B0-5FD9-480D-B90A-21BF4672CD7F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{60A37662-A3D0-4E41-B89C-0766343DA637}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTestProject1", "UnitTestProject1\UnitTestProject1.csproj", "{60A37662-A3D0-4E41-B89C-0766343DA637}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{723C56B4-FCDA-4C0C-858D-C9B2DF00F3CB}"
+	ProjectSection(SolutionItems) = preProject
+		Data Structures.pptx = Data Structures.pptx
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
