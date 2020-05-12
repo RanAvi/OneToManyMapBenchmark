@@ -1,36 +1,43 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using OneToManyMapBenchmark;
+using System;
 
 namespace UnitTestProject1
 {
     [TestClass]
     public class OneToManyMapDictionaryTests
     {
-        private static IOneToManyMap<TKey, TValue> InitializeOneToManyMap<TKey, TValue>(TKey key, TValue[] values)
-        {
-            var oneToManyMap = new OneToManyMapDictionary<TKey, TValue>();
-            oneToManyMap.AddOneToManyMapping(key, values);
-            return oneToManyMap;
-        }
-
-        ////private static IOneToManyMap<string, string> InitializeOneToManyMap(string key, string[] values)
+        ////private static IOneToManyMap<TKey, TValue> InitializeOneToManyMap<TKey, TValue>(TKey key, TValue[] values)
         ////{
-        ////    var oneToManyMap = new OneToManyMapDictionary<string, string>();
+        ////    var oneToManyMap = new OneToManyMapDictionary<TKey, TValue>();
         ////    oneToManyMap.AddOneToManyMapping(key, values);
         ////    return oneToManyMap;
         ////}
 
+        private static IOneToManyMap<string, string> InitializeOneToManyMap(Type oneToManyMapType,  string key, string[] values)
+        {
+            var oneToManyMap = (IOneToManyMap<string, string>)Activator.CreateInstance(oneToManyMapType);            
+            oneToManyMap.AddOneToManyMapping(key, values);
+            return oneToManyMap;
+        }
+
         [TestMethod]
         [TestCategory("Class Test")]
-        public void OneToManyMap_Indexer_WhenProvidedWithAValueThatsBeenMappedToAKey_ReturnsTheKey()
-        {
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void Indexer_WhenProvidedWithAValueThatsBeenMappedToAKey_ReturnsTheKey(Type oneToManyMapType)
+        {            
             // Arrange
             var expectedKey = "This is Message A";
             var value1 = "VA";
             var value2 = "MD";
             var value3 = "IN";
 
-            var oneToManyMap = InitializeOneToManyMap(expectedKey, new[] { value1, value2, value3 });
+            var oneToManyMap = InitializeOneToManyMap(oneToManyMapType, "Some irrelevant Key", new[] { "ZA", "ZB", "ZC", "ZD" });
+            oneToManyMap.AddOneToManyMapping(expectedKey, new[] { value1, value2, value3 });
+
 
             // Act
             var key1 = oneToManyMap[value1];
@@ -45,7 +52,11 @@ namespace UnitTestProject1
 
         [TestMethod]
         [TestCategory("Class Test")]
-        public void OneToManyMap_Indexer_WhenProvidedWithAValueNotMappedToAKey_Throws()
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void Indexer_WhenProvidedWithAValueNotMappedToAKey_Throws(Type oneToManyMapType)
         {
             // Arrange
             var someIrrelevantKey = "This is Message A";
@@ -54,7 +65,7 @@ namespace UnitTestProject1
             var value3 = "IN";
             var valueWithNoKeyMapping = "NonMappedValue";
 
-            var oneToManyMap = InitializeOneToManyMap(someIrrelevantKey, new[] { value1, value2, value3 });
+            var oneToManyMap = InitializeOneToManyMap(oneToManyMapType, someIrrelevantKey, new[] { value1, value2, value3 });
 
             // Act
             try
@@ -73,14 +84,18 @@ namespace UnitTestProject1
 
         [TestMethod]
         [TestCategory("Class Test")]
-        public void OneToManyMap_AddOneToManyMapping_WhenAddingANewValueToExistingKey_ShouldMapValueToKey()
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void AddOneToManyMapping_WhenAddingANewValueToExistingKey_ShouldMapValueToKey(Type oneToManyMapType)
         {
             // Arrange
             var expectedKey = "This is Message A";
             var valueAlreadyMapped = "VA";
             var newValue = "MD";
 
-            var oneToManyMap = InitializeOneToManyMap(expectedKey, new[] { valueAlreadyMapped });
+            var oneToManyMap = InitializeOneToManyMap(oneToManyMapType, expectedKey, new[] { valueAlreadyMapped });
 
             // Act
             oneToManyMap.AddOneToManyMapping(expectedKey, new[] { newValue });
@@ -91,7 +106,11 @@ namespace UnitTestProject1
 
         [TestMethod]
         [TestCategory("Class Test")]
-        public void OneToManyMap_AddOneToManyMapping_WhenValueHasPriorMapping_Throws()
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void AddOneToManyMapping_WhenValueHasPriorMapping_Throws(Type oneToManyMapType)
         {
             // Arrange
             var preExistingKey = "This is Message A";
@@ -99,7 +118,7 @@ namespace UnitTestProject1
             var irrelevantvalue1 = "MD";
             var irrelevantvalue2 = "IN";
 
-            var oneToManyMap = InitializeOneToManyMap(preExistingKey, new[] { valueAlreadyMapped, irrelevantvalue1, irrelevantvalue2 });
+            var oneToManyMap = InitializeOneToManyMap(oneToManyMapType, preExistingKey, new[] { valueAlreadyMapped, irrelevantvalue1, irrelevantvalue2 });
 
             // Act
             try
@@ -118,14 +137,18 @@ namespace UnitTestProject1
 
         [TestMethod]
         [TestCategory("Class Test")]
-        public void OneToManyMap_AddOneToManyMapping_WhenOneOrMoreValuesHavePriorMapping_MapRemainsUnchanged()
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void AddOneToManyMapping_WhenOneOrMoreValuesHavePriorMapping_MapRemainsUnchanged(Type oneToManyMapType)
         {
             // Arrange
             var preExistingKey = "This is Message A";
             var valueAlreadyMapped = "VA";
             var irrelevantvalue1 = "MD";
             var irrelevantvalue2 = "IN";
-            var oneToManyMap = InitializeOneToManyMap(preExistingKey, new[] { valueAlreadyMapped, irrelevantvalue1, irrelevantvalue2 });
+            var oneToManyMap = InitializeOneToManyMap(oneToManyMapType, preExistingKey, new[] { valueAlreadyMapped, irrelevantvalue1, irrelevantvalue2 });
             var irrelevantValueToBeAdded1 = "XXXXXX";
             var irrelevantValueToBeAdded2 = "YYYYYY";
 
@@ -148,6 +171,30 @@ namespace UnitTestProject1
             }
         }
 
+        [TestMethod]
+        [TestCategory("Class Test")]
+        [DataRow(typeof(OneToManyMapDataTable<string, string>))]
+        [DataRow(typeof(OneToManyMapDictionary<string, string>))]
+        [DataRow(typeof(OneToManyMapList<string, string>))]
+        [DataRow(typeof(OneToManyMapSortedList<string, string>))]
+        public void AddOneToManyMapping_WhenKeyExists_ShouldAddValuesToExistingKey(Type oneToManyMapType)
+        {
+            // Arrange
+            var preExistingKey = "This is Message A";
+            var value1 = "VA";
+            var value2 = "MD";
+            var value3 = "IN";
+            var newValueMappedToExistingKey = "NewValue";
+
+            var oneToManyMapDictionary = InitializeOneToManyMap(oneToManyMapType, preExistingKey, new[] { value1, value2, value3 });
+
+            // Act
+            oneToManyMapDictionary.AddOneToManyMapping(preExistingKey, new[] { newValueMappedToExistingKey });
+
+            // Assert
+            Assert.AreEqual(preExistingKey, oneToManyMapDictionary[newValueMappedToExistingKey], $"The new value: {newValueMappedToExistingKey} was expected to be mapped to the pre-existing key: {preExistingKey}");
+        }
+
         private void AssertValueIsNotMapped(IOneToManyMap<string, string> oneToManyMap, string valueNotMapped)
         {
             // Act
@@ -160,26 +207,6 @@ namespace UnitTestProject1
             {
                 // Intentionally Ignoring this exception since we're expecting this exception
             }
-        }
-
-        [TestMethod]
-        [TestCategory("Class Test")]
-        public void OneToManyMap_AddOneToManyMapping_WhenKeyExists_ShouldAddValuesToExistingKey()
-        {
-            // Arrange
-            var preExistingKey = "This is Message A";
-            var value1 = "VA";
-            var value2 = "MD";
-            var value3 = "IN";
-            var newValueMappedToExistingKey = "NewValue";
-
-            var oneToManyMapDictionary = InitializeOneToManyMap(preExistingKey, new[] { value1, value2, value3 });
-
-            // Act
-            oneToManyMapDictionary.AddOneToManyMapping(preExistingKey, new[] { newValueMappedToExistingKey });
-
-            // Assert
-            Assert.AreEqual(preExistingKey, oneToManyMapDictionary[newValueMappedToExistingKey], $"The new value: {newValueMappedToExistingKey} was expected to be mapped to the pre-existing key: {preExistingKey}");
         }
     }
 }

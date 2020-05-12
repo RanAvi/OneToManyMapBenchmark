@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OneToManyMapBenchmark
 {
     [Serializable]
+    [ExcludeFromCodeCoverage]
     public sealed class ValueNotMappedToKeyException : Exception
     {
         public ValueNotMappedToKeyException() { }

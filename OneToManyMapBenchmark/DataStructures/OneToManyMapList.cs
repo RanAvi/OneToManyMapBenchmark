@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 
 namespace OneToManyMapBenchmark
 {
@@ -125,11 +126,13 @@ namespace OneToManyMapBenchmark
             KeyId = keyId;
         }
 
+        [ExcludeFromCodeCoverage]
         public override bool Equals(object obj)
         {
             return Equals(obj as ValueKeyId<TValue>);
         }
 
+        [ExcludeFromCodeCoverage]
         public bool Equals(ValueKeyId<TValue> other)
         {
             return other != null &&
@@ -137,6 +140,7 @@ namespace OneToManyMapBenchmark
                    EqualityComparer<TValue>.Default.Equals(Value, other.Value);
         }
 
+        [ExcludeFromCodeCoverage]
         public override int GetHashCode()
         {
             return HashCode.Combine(KeyId, Value);
